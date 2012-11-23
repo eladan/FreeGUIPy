@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: FreeGUIPy
+Version: 0.1dev
+Summary: Next generation GUI configurator for FreeSWITCH.
+Home-page: http://www.freeguipy.org
+Author: Noel Morgan
+Author-email: noel@vwci.com
+License: See http://www.python.org/2.6/license.html
+Description: Next generation GUI configurator for FreeSWITCH.
+Keywords: telephonypy
+Platform: UNKNOWN
