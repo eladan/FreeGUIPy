@@ -53,6 +53,7 @@ company_contexts = Table('company_contexts', metadata,
     Column('context_id', Integer, ForeignKey('contexts.id', onupdate="CASCADE", ondelete="CASCADE")),
 
 )
+
 # Mapping for companies to addresses
 company_addresses = Table('company_addresses', metadata,
     Column('company_id', Integer, ForeignKey('companies.id', onupdate="CASCADE", ondelete="CASCADE")),
@@ -60,7 +61,7 @@ company_addresses = Table('company_addresses', metadata,
 
 )
 
-# Mapping for companies to notes
+# Mapping for companies to tickets
 company_tickets = Table('company_tickets', metadata,
     Column('company_id', Integer, ForeignKey('companies.id', onupdate="CASCADE", ondelete="CASCADE")),
     Column('ticket_id', Integer, ForeignKey('tickets.id', onupdate="CASCADE", ondelete="CASCADE")),
