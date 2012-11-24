@@ -21,7 +21,6 @@
     except that You may alter any license notices to the extent required to
     remedy known factual inaccuracies.
 """
-
 # Routing for URL to controller/method translation
 from telephonypy.router import Map
 

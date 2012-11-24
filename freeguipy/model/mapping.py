@@ -61,6 +61,20 @@ company_addresses = Table('company_addresses', metadata,
 
 )
 
+# Mapping for companies to email_addresses
+company_email_addresses = Table('company_email_addresses', metadata,
+    Column('company_id', Integer, ForeignKey('companies.id', onupdate="CASCADE", ondelete="CASCADE")),
+    Column('email_address_id', Integer, ForeignKey('email_addresses.id', onupdate="CASCADE", ondelete="CASCADE")),
+
+)
+
+# Mapping for companies to telephone numbers
+company_telephone_numbers = Table('company_telephone_numbers', metadata,
+    Column('company_id', Integer, ForeignKey('companies.id', onupdate="CASCADE", ondelete="CASCADE")),
+    Column('telephone_number_id', Integer, ForeignKey('telephone_numbers.id', onupdate="CASCADE", ondelete="CASCADE")),
+
+)
+
 # Mapping for companies to tickets
 company_tickets = Table('company_tickets', metadata,
     Column('company_id', Integer, ForeignKey('companies.id', onupdate="CASCADE", ondelete="CASCADE")),
@@ -75,9 +89,37 @@ company_notes = Table('company_notes', metadata,
 
 )
 
+# Mapping for companies to addresses
+user_addresses = Table('user_addresses', metadata,
+    Column('user_id', Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE")),
+    Column('address_id', Integer, ForeignKey('addresses.id', onupdate="CASCADE", ondelete="CASCADE")),
+
+)
+
 # Mapping for users to notes
 user_notes = Table('user_notes', metadata,
     Column('user_id', Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE")),
     Column('note_id', Integer, ForeignKey('notes.id', onupdate="CASCADE", ondelete="CASCADE")),
+
+)
+
+# Mapping for users to email_addresses
+user_email_addresses = Table('user_email_addresses', metadata,
+    Column('user_id', Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE")),
+    Column('email_address_id', Integer, ForeignKey('email_addresses.id', onupdate="CASCADE", ondelete="CASCADE")),
+
+)
+
+# Mapping for companies to tickets
+user_tickets = Table('user_tickets', metadata,
+    Column('user_id', Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE")),
+    Column('ticket_id', Integer, ForeignKey('tickets.id', onupdate="CASCADE", ondelete="CASCADE")),
+
+)
+
+# Mapping for users to telephone numbers
+user_telephone_numbers = Table('user_telephone_numbers', metadata,
+    Column('user_id', Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE")),
+    Column('telephone_number_id', Integer, ForeignKey('telephone_numbers.id', onupdate="CASCADE", ondelete="CASCADE")),
 
 )

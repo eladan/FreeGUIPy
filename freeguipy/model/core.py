@@ -27,7 +27,7 @@ import datetime
 from datetime import datetime
 import transaction
 import sqlalchemy
-from sqlalchemy import ForeignKey, Column, Table
+from sqlalchemy import ForeignKey, Column, Table, Enum
 from sqlalchemy.types import Integer, DateTime, Boolean, Unicode, UnicodeText, Float
 from sqlalchemy.orm import relation, synonym, relationship, backref
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -103,11 +103,14 @@ class User(DataBase):
     last_name = Column(Unicode(128), nullable=True)
     password = Column(Unicode(255), nullable=False)
     active = Column(Boolean, default=True)
-    email = Column(Unicode(128), nullable=True)
-    tel = Column(Unicode(64), nullable=True)
-    mobile = Column(Unicode(64), nullable=True)
 
-    groups = relationship(Group, secondary='user_groups')
+    groups = relationship(Group, secondary='user_groups', backref="users")
+    company = relationship("User", secondary="user_companies", backref="users")
+    addresses = relationship("Address", secondary="user_addresses", backref="users")
+    email_addresses = relationship("EmailAddress", secondary="user_email_addresses", backref="users")
+    telephone_numbers = relationship("Telephone", secondary="user_telephone_numbers", backref="users")
+    tickets = relationship("Ticket", secondary="user_tickets", backref='users')
+    notes = relationship("Note", secondary="user_notes", backref='users')
 
     @classmethod
     def by_id(cls, id):
@@ -237,6 +240,36 @@ class AdminGroup(DataBase):
         return perms
 
 
+class Company(DataBase):
+    '''Company object for storing company/customer information'''
+    __tablename__= 'companies'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(Unicode(100), nullable=False)
+    company_type_id = Column(Integer, default=1)
+    start_date = Column(DateTime, default=datetime.date(datetime.now()))
+    end_date = Column(DateTime, nullable=True)
+    last_login = Column(DateTime,default=datetime.date(datetime.now()))
+    url = Column(Unicode(100), nullable=True)
+    active = Column(Boolean, default=True)
+
+    users = relationship("User", secondary="user_companies", backref="companies")
+    addresses = relationship("Address", secondary="company_addresses", backref="companies")
+    email_addresses = relationship("EmailAddress", secondary="company_email_addresses", backref="companies")
+    telephone_numbers = relationship("Telephone", secondary="company_telephone_numbers", backref="companies")
+    contexts = relationship("Context", secondary="company_contexts", backref="companies")
+    notes = relationship("Note", secondary="company_notes", backref='companies')
+    tickets = relationship("Ticket", secondary="company_tickets", backref='companies')
+
+    def __repr__(self):
+        return "<Customer({0},{1},{2},{3},{4},{5},{6},{7},{8}>".format(
+            self.id,self.name,self.company_type_id,self.start_date,
+            self.end_date,self.last_login,self.url,self.tel,self.active)
+
+    def __str__(self):
+        return self.name
+
+
 class Address(DataBase):
     '''Address table for users, companies, and whatever else.'''
     __tablename__='addresses'
@@ -256,33 +289,38 @@ class Address(DataBase):
         return self.name
 
 
-class Company(DataBase):
-    '''Company object for storing company/customer information'''
-    __tablename__= 'companies'
+class EmailAddress(DataBase):
+    '''Email Address object for users and companies.'''
+    __tablename__= 'email_addresses'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    name = Column(Unicode(100), nullable=False)
-    company_type_id = Column(Integer, default=1)
-    start_date = Column(DateTime, default=datetime.date(datetime.now()))
-    end_date = Column(DateTime, nullable=True)
-    last_login = Column(DateTime,default=datetime.date(datetime.now()))
-    url = Column(Unicode(100), nullable=True)
-    tel = Column(Unicode(100), nullable=True)
-    active = Column(Boolean, default=True)
+    name = Column(Unicode(100), nullable=True)
+    _email = Column(Unicode(100), nullable=False)
 
-    users = relationship("User", secondary="user_companies", backref="companies")
-    addresses = relationship("Address", secondary="company_addresses", backref="companies")
-    contexts = relationship("Context", secondary="company_contexts", backref="companies")
-    notes = relationship("Note", secondary="company_notes", backref='companies')
-    tickets = relationship("Ticket", secondary="company_tickets", backref='companies')
+    def set_email(self, value):
+        if '@' not in value:
+            raise Exception("Invalid email address.")
+        self._email = value
 
-    def __repr__(self):
-        return "<Customer({0},{1},{2},{3},{4},{5},{6},{7},{8}>".format(
-            self.id,self.name,self.company_type_id,self.start_date,
-            self.end_date,self.last_login,self.url,self.tel,self.active)
+    def get_email(self):
+        return self._email
 
-    def __str__(self):
-        return self.name
+    email = property(get_email, set_email)
+
+
+class Telephone(DataBase):
+    '''Telephone numbers for users and companies.'''
+    __tablename__= 'telephone_numbers'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(Unicode(100), nullable=True)
+    telephone = Column(Unicode(100), nullable=False)
+    extension = Column(Unicode(6), nullable=True)
+    type = Column(Enum('Home', 'Office', 'Mobile', name='telephone_types'))
+
+    @property
+    def has_extension(self):
+        return True if extension is not None else False
 
 
 class Note(DataBase):
@@ -370,3 +408,4 @@ class Context(DataBase):
     @classmethod
     def by_domain(self, domain):
         return Context.query.filter_by(domain=domain).first()
+

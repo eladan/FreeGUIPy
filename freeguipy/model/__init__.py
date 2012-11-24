@@ -67,8 +67,7 @@ def init_model(engine):
             transaction.commit()
 
             # Create the admin user so we can always access the system as admin.
-            su = User(first_name=u'Admin', last_name=u'User', username=u'nobody@domain.com',
-                email=u'nobody@domain.com')
+            su = User(first_name=u'Admin', last_name=u'User', username=u'nobody@domain.com')
             su._set_password('admin')
             su.groups.append(admin_group)
             db.add(su)
@@ -77,4 +76,6 @@ def init_model(engine):
     insert()
 
 from freeguipy.model.core import User, Group, Permission, AdminGroup, AdminUser, Address, Ticket, \
-    TicketNote, TicketPriority, TicketStatus, TicketType, Company, Context, Note
+    TicketNote, TicketPriority, TicketStatus, TicketType, Company, Context, Note, EmailAddress, Telephone
+
+from switch import *

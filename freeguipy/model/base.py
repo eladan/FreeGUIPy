@@ -31,6 +31,32 @@ class DBBase(object):
 
     query = db.query_property()
 
+    # Comparison conveniences
+    def __eq__(self, other):
+        if isinstance(other, self):
+            return self.__class__.__name__
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def create(self, obj):
+        if type(obj) is not dict:
+            raise TypeError("You need to pass a dictionary for create.")
+
+        for k in obj:
+            if hasattr(self, k):
+                setattr(self, k, obj[k])
+
+        # Modify this to change this behavior.  I use it to get ID.
+        db.flush()
+
+        return self.id
+
+    @classmethod
+    def delete(cls, id=None):
+        return cls.get(id).delete()
+
     @classmethod
     def all(cls):
         cls.query.all()
