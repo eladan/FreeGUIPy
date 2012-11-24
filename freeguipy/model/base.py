@@ -27,9 +27,7 @@ __all__=['DBBase']
 
 
 class DBBase(object):
-    """
-    Base class for DB Model
-    """
+    """Base class for DB Model"""
 
     query = db.query_property()
 
@@ -42,8 +40,8 @@ class DBBase(object):
         cls.query.first()
 
     def todict(self):
-        """ JSON PG Date object serializer, and whatever else is
-        needed for convenience...
+        """ JSON Date object serializer, or what else is
+        needed for convenience.
         """
         def convert_datetime(val):
             return val.strftime("%Y-%m-%d %H:%M:%S")
@@ -58,6 +56,6 @@ class DBBase(object):
 
     def iterfunc(self):
         """ Returns an iterable that supports .next()
-            so we can do dict(cls_instance)
+        so we can do dict(cls_instance)
         """
         return self.todict()

@@ -42,8 +42,7 @@ from mapping import user_groups, group_permissions
 
 
 class Group(DataBase):
-    """
-    Groups
+    """Groups Object for Users
     """
     __tablename__ = 'groups'
 
@@ -72,8 +71,7 @@ class Group(DataBase):
 
 
 class Permission(DataBase):
-    """
-    Permissions
+    """Permissions Object for Group Credentials
     """
     __tablename__='permissions'
 
@@ -95,8 +93,7 @@ class Permission(DataBase):
 
 
 class User(DataBase):
-    """
-    User model
+    """User model
     """
     __tablename__='users'
 
@@ -165,8 +162,211 @@ class User(DataBase):
         return self.password[40:] == hashed_pass.hexdigest()
 
     def __repr__(self):
-        '''Proper formatting for session storage and retrieval as pickled User object.
-        '''
+        # Proper formatting for session storage and retrieval as pickled User object.
         return "<User({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10})>".format(
             self.id,self.username, self.first_name, self.last_name, self.password,
             self.active, self.email, self.tel, self.mobile)
+
+
+class AdminUser(DataBase):
+    '''Admin Object for the admin users that will administer the application
+    from the admin portal.
+    '''
+    __tablename__='admin_users'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    username = Column(Unicode(128), unique=True, nullable=False)
+    password = Column(Unicode(32), nullable=False)
+    first_name =  Column(Unicode(64), nullable=True)
+    last_name = Column(Unicode(64), nullable=True)
+    last_login = Column(DateTime, default=datetime.now())
+    remote_addr = Column(Unicode(15), nullable=True)
+    session_id =  Column(Unicode(128), nullable=True)
+    active = Column(Boolean, default=True)
+
+    def __unicode__(self):
+        return self.name or self.username
+
+    @property
+    def name(self):
+        return self.first_name + ' ' + self.last_name
+
+    @property
+    def permissions(self):
+        perms = []
+        for g in self.groups:
+            perms.append(g.permissions)
+        return perms
+
+    def __repr__(self):
+        # If you add fields, you need to fix this for what you want to serialize
+        # later.
+        return "<AdminUser({0},{1},{2},{3},{4},{5},{6},{7},{8})>".format(
+            self.id,self.username, self.password, self.first_name,
+            self.last_name,self.last_login,self.remote_addr,self.session_id,
+            self.active)
+
+
+class AdminGroup(DataBase):
+    '''Admin groups for special permissions for the admin portal.'''
+    __tablename__ = 'admin_groups'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(Unicode(64), unique=True, nullable=False)
+    description = Column(UnicodeText)
+    created_date = Column(DateTime, default=datetime.now)
+
+    admin_users = relationship("AdminUser", secondary="admin_user_groups", backref='admin_groups')
+
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+        self.created_date = datetime.now()
+
+    def __repr__(self):
+        return "<AdminGroup({0})>".format(self.name)
+
+    def __unicode__(self):
+        return self.name
+
+    @property
+    def permissions(self):
+        perms = []
+        for perm in self.admin_permissions:
+            perms.append(perm.name)
+        return perms
+
+
+class Address(DataBase):
+    '''Address table for users, companies, and whatever else.'''
+    __tablename__='addresses'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(Unicode(100), nullable=True)
+    address = Column(Unicode(64), nullable=True)
+    address_2 = Column(Unicode(64), nullable=True)
+    city = Column(Unicode(64), nullable=True)
+    state = Column(Unicode(32))
+    postal_code = Column(Unicode(15))
+
+    def __repr__(self):
+        return "<Address({0})>".format(self.name)
+
+    def __unicode__(self):
+        return self.name
+
+
+class Company(DataBase):
+    '''Company object for storing company/customer information'''
+    __tablename__= 'companies'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(Unicode(100), nullable=False)
+    company_type_id = Column(Integer, default=1)
+    start_date = Column(DateTime, default=datetime.date(datetime.now()))
+    end_date = Column(DateTime, nullable=True)
+    last_login = Column(DateTime,default=datetime.date(datetime.now()))
+    url = Column(Unicode(100), nullable=True)
+    tel = Column(Unicode(100), nullable=True)
+    active = Column(Boolean, default=True)
+
+    users = relationship("User", secondary="user_companies", backref="companies")
+    addresses = relationship("Address", secondary="company_addresses", backref="companies")
+    contexts = relationship("Context", secondary="company_contexts", backref="companies")
+    notes = relationship("Note", secondary="company_notes", backref='companies')
+    tickets = relationship("Ticket", secondary="company_tickets", backref='companies')
+
+    def __repr__(self):
+        return "<Customer({0},{1},{2},{3},{4},{5},{6},{7},{8}>".format(
+            self.id,self.name,self.company_type_id,self.start_date,
+            self.end_date,self.last_login,self.url,self.tel,self.active)
+
+    def __str__(self):
+        return self.name
+
+
+class Note(DataBase):
+    '''Notes for users and companies.'''
+    __tablename__='notes'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    created = Column(DateTime,default=datetime.now())
+    subject  =  Column(Unicode(128), nullable=False)
+    note = Column(UnicodeText, nullable=False)
+
+    def __repr__(self):
+        return "<Note({0}, {1})>".format(self.subject, self.note)
+
+    def __unicode__(self):
+        return self.subject
+
+
+class Ticket(DataBase):
+    __tablename__='tickets'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    opened_by = Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"))
+    ticket_status_id = Column(Integer, ForeignKey('ticket_statuses.id', onupdate="CASCADE", ondelete="CASCADE"))
+    ticket_priority_id =  Column(Integer, ForeignKey('ticket_priorities.id', onupdate="CASCADE", ondelete="CASCADE"))
+    ticket_type_id = Column(Integer, ForeignKey('ticket_types.id', onupdate="CASCADE", ondelete="CASCADE"))
+    created = Column(DateTime,default=datetime.now())
+    expected_resolve_date = Column(DateTime,default=datetime.now())
+    subject  =  Column(Unicode(255), nullable=True)
+    description = Column(UnicodeText, nullable=False)
+
+    ticket_note = relationship('TicketNote', backref='tickets')
+    ticket_type = relationship('TicketType', backref='tickets')
+    ticket_priority = relationship('TicketPriority', backref='tickets')
+    ticket_status = relationship('TicketStatus', backref='tickets')
+
+
+class TicketNote(DataBase):
+    __tablename__='ticket_notes'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    ticket_id = Column(Integer, ForeignKey('tickets.id', onupdate="CASCADE", ondelete="CASCADE"))
+    user_id = Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"))
+    created = Column(DateTime,default=datetime.now())
+    subject  =  Column(Unicode(255), nullable=True)
+    description = Column(UnicodeText, nullable=False)
+
+
+class TicketPriority(DataBase):
+    __tablename__='ticket_priorities'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(Unicode(128), default=u'Unknown')
+    description = Column(Unicode(255), default=u'Unknown')
+
+
+class TicketType(DataBase):
+    __tablename__='ticket_types'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(Unicode(32), default=u'Unknown')
+    description = Column(Unicode(255), default=u'Unknown')
+
+
+class TicketStatus(DataBase):
+    __tablename__='ticket_statuses'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(Unicode(32), default=u'Unknown')
+    description = Column(Unicode(255), default=u'Unknown')
+
+
+class Context(DataBase):
+    __tablename__='contexts'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    company_id =  Column(Integer, ForeignKey('companies.id', onupdate="CASCADE", ondelete="CASCADE"))
+    domain = Column(Unicode(64), unique=True)
+    profile = Column(Unicode(64), nullable=True)
+    context = Column(Unicode(128), nullable=True)
+    caller_id_name = Column(Unicode(64), nullable=True)
+    caller_id_number = Column(Unicode(15), nullable=True)
+    gateway = Column(Unicode(64), default=u'default')
+
+    @classmethod
+    def by_domain(self, domain):
+        return Context.query.filter_by(domain=domain).first()
