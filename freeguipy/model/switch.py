@@ -46,9 +46,6 @@ class PBXIVR(DataBase):
     direct_dial = Column(Boolean, default=True)
     timeout_destination = Column(Integer, ForeignKey('pbx_inbound_routes.id', onupdate="CASCADE", ondelete="CASCADE"))
 
-    def __str__(self):
-        return self.id
-
 
 class PBXIVROption(DataBase):
     __tablename__='pbx_ivr_options'
@@ -57,9 +54,6 @@ class PBXIVROption(DataBase):
     pbx_ivr_id = Column(Integer, ForeignKey('pbx_ivrs.id', onupdate="CASCADE", ondelete="CASCADE"))
     option = Column(Unicode(1))
     pbx_inbound_route_id = Column(Integer, ForeignKey('pbx_inbound_routes.id', onupdate="CASCADE", ondelete="CASCADE"))
-
-    def __str__(self):
-        return self.id
 
 
 class PBXVirtualExtension(DataBase):
@@ -73,9 +67,6 @@ class PBXVirtualExtension(DataBase):
     timeout = Column(Integer, default=13)
     pbx_inbound_route_id = Column(Integer, ForeignKey('pbx_inbound_routes.id', onupdate="CASCADE", ondelete="CASCADE"))
 
-    def __str__(self):
-        return self.id
-
 
 class PBXCallerIDRoute(DataBase):
     __tablename__='pbx_caller_id_routes'
@@ -86,9 +77,6 @@ class PBXCallerIDRoute(DataBase):
     cid_number = Column(Unicode(15), nullable=False)
     pbx_inbound_route_id = Column(Integer, ForeignKey('pbx_inbound_routes.id', onupdate="CASCADE", ondelete="CASCADE"))
 
-    def __str__(self):
-        return self.id
-
 
 class PBXBlacklistedNumber(DataBase):
     __tablename__='pbx_blacklisted_numbers'
@@ -97,9 +85,6 @@ class PBXBlacklistedNumber(DataBase):
     domain = Column(Unicode(64), default=u"sip.freepybx.org")
     context = Column(Unicode(128), default=u"sip.freepybx.org")
     cid_number = Column(Unicode(15), nullable=False)
-
-    def __str__(self):
-        return self.id
 
 
 class PBXVirtualMailbox(DataBase):
@@ -117,9 +102,6 @@ class PBXVirtualMailbox(DataBase):
     skip_greeting = Column(Boolean, default=False)
     audio_file = Column(Unicode(128), default=None)
 
-    def __str__(self):
-        return self.id
-
 
 class PBXTTS(DataBase):
     __tablename__='pbx_tts'
@@ -132,9 +114,6 @@ class PBXTTS(DataBase):
     name = Column(Unicode(64), default=u'Unknown')
     voice = Column(Unicode(64))
     text = Column(UnicodeText)
-
-    def __str__(self):
-        return self.id
 
 
 class PBXTODRoute(DataBase):
@@ -326,9 +305,6 @@ class PBXInboundRouteType(DataBase):
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(Unicode(64))
     description = Column(Unicode(255))
-
-    def __str__(self):
-        return self.id
 
 
 class PBXInboundRouteCondition(DataBase):

@@ -40,6 +40,13 @@ class DBBase(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    @property
+    def __str__(self):
+        try:
+            return str("<{0}".format(self.__class__.__name__))+str("({0})>".format(self.name))
+        except AttributeError:
+            return str("<{0}".format(self.__class__.__name__))+str("({0})>".format(self.id))
+
     def create(self, obj):
         if type(obj) is not dict:
             raise TypeError("You need to pass a dictionary for create.")
