@@ -50,6 +50,8 @@ def make_config(global_conf, app_conf):
     config.init_defaults(global_conf, app_conf, package='freeguipy', paths=paths)
     config['telephonypy.app_globals'] = app_globals.Globals(config)
     config['telephonypy.h'] = helpers
+    config['telephonypy.login_url'] = "/login"
+
 
     # Setup cache object as early as possible
     import telephonypy

@@ -28,6 +28,7 @@ from freeguipy.model import db
 
 
 class BaseController(ControllerBase):
+
     def __call__(self, environ, start_response, action, vars):
         try:
             return super(BaseController, self).__call__(environ, start_response, action, vars)

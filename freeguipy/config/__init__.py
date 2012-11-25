@@ -46,8 +46,8 @@ def app_factory(global_conf, static_files=True, **app_conf):
     app = RouteFactory(routes)
 
     # CSRF Middleware (turn off for remote testing from local machine Ajax calls)
-    if _config['csrf']:
-        app = CSRFMiddleware(app, _config)
+#    if _config['csrf']:
+#        app = CSRFMiddleware(app, _config)
 
     # Session Middleware
     app = SessionMiddleware(app, _config)

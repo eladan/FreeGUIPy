@@ -22,3 +22,5 @@ freeguipy/model/__init__.py
 freeguipy/model/base.py
 freeguipy/model/core.py
 freeguipy/model/mapping.py
+freeguipy/model/switch.py
+freeguipy/model/util.py

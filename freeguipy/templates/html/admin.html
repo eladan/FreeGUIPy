@@ -1,0 +1,13 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="hero-unit">
+    <h1>FreeGUIPy Admin Area</h1><img style="float: right;margin-top: -90px; opacity: .3" src="images/logo.png" class="img-rounded">
+    <p>Next generation GUI configurator for FreeSWITCH. {{ c.permissions }}</p>
+    <p><a class="btn btn-info btn-large">Learn more &raquo;</a></p>
+</div>
+<div class="alert alert-info">  <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>Welcome to the super secret admin page!</h4>
+    <h4>This is the admin only page. Logout and attempt to access this page again.</h4>
+</div>
+{% endblock %}

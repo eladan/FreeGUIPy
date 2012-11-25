@@ -73,7 +73,7 @@ def init_model(engine):
             db.add(su)
             transaction.commit()
 
-    insert()
+    #insert()
 
 from freeguipy.model.core import User, Group, Permission, AdminGroup, AdminUser, Address, Ticket, \
     TicketNote, TicketPriority, TicketStatus, TicketType, Company, Context, Note, EmailAddress, Telephone

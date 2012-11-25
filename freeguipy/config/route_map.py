@@ -21,15 +21,18 @@
     except that You may alter any license notices to the extent required to
     remedy known factual inaccuracies.
 """
+
 # Routing for URL to controller/method translation
 from telephonypy.router import Map
-
 
 def make_routes():
     routes = []
 
     routes.append(Map(template='/', handler='freeguipy.controllers.root:Root', action='home'))
-    routes.append(Map(template='/login', handler='freeguipy.controllers.root:Root', action='login'))
+    routes.append(Map(template='/home', handler='freeguipy.controllers.root:Root', action='home'))
+    routes.append(Map(template='/admin', handler='freeguipy.controllers.root:Root', action='admin'))
+    routes.append(Map(template='/login', handler='freeguipy.controllers.auth:Auth', action='login'))
+    routes.append(Map(template='/logout', handler='freeguipy.controllers.auth:Auth', action='logout'))
     routes.append(Map(template='/{action}', handler='freeguipy.controllers.root:Root'))
     routes.append(Map(template='/{action}/{id}', handler='freeguipy.controllers.root:Root'))
 

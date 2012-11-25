@@ -26,23 +26,32 @@ import time
 
 import telephonypy
 from telephonypy import tmpl_context as c, session
-from telephonypy.decorators import xml, xml_render, html, html_render, jsonify, authorize, \
+from telephonypy.decorators import xml, xml_render, html, html_render, jsonify, authorize,\
     credential, authenticated, redirect
 
 from freeguipy.model import User
 from base import BaseController
 
 
-class Root(BaseController):
+class Auth(BaseController):
 
-    @html('index.html')
-    def home(self, *args, **kwargs):
+    @html('login.html')
+    def login(self, *args, **kwargs):
+
+        if self.request.method == 'POST':
+            if 'username' in self.request.params:
+                username = self.request.params['username']
+                password = self.request.params['password']
+                u = User.by_username(username)
+                if u and u.validate_password(password):
+                    session['user'] = u
+                    session.save()
+                    return redirect("/admin")
+            else:
+                return html_render()
         return html_render()
 
-    @authorize(credential('admin'))
-    @html('admin.html')
-    def admin(self, *args, **kwargs):
-        user = session['user']
-        c.permissions = user.permissions
-        return html_render(user=user)
-
+    def logout(self, *args, **kwargs):
+        session.invalidate()
+        session.delete()
+        return self.login()

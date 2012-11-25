@@ -64,7 +64,7 @@ class Group(DataBase):
         self.created_date = datetime.now()
 
     def __repr__(self):
-        return "<Group({0},{1},{2})>".format(self.name, self.description, self.created_date)
+        return "{0}".format(self.name)
 
     def __unicode__(self):
         return self.name
@@ -89,7 +89,7 @@ class Permission(DataBase):
         self.description = description or name
 
     def __repr__(self):
-        return "<Permission({0})>".format(self.name)
+        return "{0}".format(self.name)
 
 
 class User(DataBase):
@@ -138,7 +138,8 @@ class User(DataBase):
         perms = []
         for g in self.groups:
             perms.append(g.permissions)
-        return perms
+            print g.permissions
+        return ','.join([str(p) for p in perms])
 
     def _set_password(self, password):
         hashed_password = password
@@ -166,9 +167,9 @@ class User(DataBase):
 
     def __repr__(self):
         # Proper formatting for session storage and retrieval as pickled User object.
-        return "<User({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10})>".format(
+        return "<User({0},{1},{2},{3},{4},{5},{6})>".format(
             self.id,self.username, self.first_name, self.last_name, self.password,
-            self.active, self.email, self.tel, self.mobile)
+            self.active,self.permissions)
 
 
 class AdminUser(DataBase):
